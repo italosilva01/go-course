@@ -1,4 +1,4 @@
-package main
+package productentities
 
 type Product struct {
 	ID string `json:"id"` // Essa terceira instrução é indicando que o campo ID, quando for convertido para JSon

@@ -7,6 +7,7 @@ import (
 	"first-tutorial/internal/product/productdecode"
 	"first-tutorial/internal/product/productdomain/productentities"
 	"first-tutorial/internal/product/productdomain/productservices"
+	"fmt"
 	"net/http"
 
 	"github.com/google/uuid"
@@ -33,12 +34,15 @@ func GetProductByIDHandler(w http.ResponseWriter, r *http.Request) {
 
 func SearchProductsHandler(w http.ResponseWriter, r *http.Request) {
 	productType := productdecode.DecodeTypeQueryString(r)
+	fmt.Println(productType)
 	var matchedValues []*productentities.Product
 	for _, value := range productdb.Memory {
 		if value.Type == productType {
 			matchedValues = append(matchedValues, value)
 		}
 	}
+	fmt.Println(matchedValues)
+
 	encode.WriteJsonResponse(w, matchedValues, http.StatusOK)
 }
 
@@ -46,6 +50,8 @@ func SearchProductsHandler(w http.ResponseWriter, r *http.Request) {
 func CreateProductHandler(w http.ResponseWriter, r *http.Request) {
 	product, err := productdecode.DecodeProductFromBody(r)
 
+	fmt.Println(product);
+	fmt.Println("product");
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return

@@ -1,6 +1,6 @@
 module first-tutorial
 
-go 1.23.3
+go 1.20
 
 require (
 	github.com/go-chi/chi v1.5.5

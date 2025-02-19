@@ -1,71 +1,61 @@
 package producthttp
 
 import (
-	"errors"
 	"first-tutorial/internal/encode"
-	"first-tutorial/internal/product/productdb"
 	"first-tutorial/internal/product/productdecode"
-	"first-tutorial/internal/product/productdomain/productentities"
 	"first-tutorial/internal/product/productdomain/productservices"
-	"fmt"
 	"net/http"
-
-	"github.com/google/uuid"
 )
 
 var productService = productservices.New()
 
-func GetProductByIDHandler(w http.ResponseWriter, r *http.Request) {
-	id, err := productdecode.DecodeStringIDFromURI(r)
+func SearchProductsHandler(w http.ResponseWriter, r *http.Request) {
+	println(r)
+	ctx := r.Context()
+	productType := productdecode.DecodeTypeQueryString(r)
+
+	products, err := productService.Search(ctx, productType)
+
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
 	}
 
-	product, ok := productdb.Memory[id]
-	if !ok {
-		err := errors.New("product_not_found")
-		http.Error(w, err.Error(), http.StatusNotFound)
-		return
-	}
-
-	encode.WriteJsonResponse(w, product, http.StatusOK)
+	encode.WriteJsonResponse(w, products, http.StatusOK)
 }
-
-func SearchProductsHandler(w http.ResponseWriter, r *http.Request) {
-	productType := productdecode.DecodeTypeQueryString(r)
-	fmt.Println(productType)
-	var matchedValues []*productentities.Product
-	for _, value := range productdb.Memory {
-		if value.Type == productType {
-			matchedValues = append(matchedValues, value)
-		}
-	}
-	fmt.Println(matchedValues)
-
-	encode.WriteJsonResponse(w, matchedValues, http.StatusOK)
-}
-
 
 func CreateProductHandler(w http.ResponseWriter, r *http.Request) {
-	product, err := productdecode.DecodeProductFromBody(r)
+	ctx := r.Context()
 
-	fmt.Println(product);
-	fmt.Println("product");
+	productToCreate, err := productdecode.DecodeProductFromBody(r)
+
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	id, err := uuid.NewUUID()
+	product, err := productService.Create(ctx, productToCreate)
+
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
 	}
-	idString := id.String()
-	product.ID = idString
-	productdb.Memory[idString] = product
 
 	encode.WriteJsonResponse(w, product, http.StatusCreated)
 }
 
+func GetProductByIDHandler(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 
+	id, err := productdecode.DecodeStringIDFromURI(r)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+	}
+
+	product, err := productService.GetByID(ctx, id)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+	}
+
+	encode.WriteJsonResponse(w, product, http.StatusOK)
+}

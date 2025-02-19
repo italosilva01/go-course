@@ -19,11 +19,11 @@ func main() {
 	})
 	router.Get("/products/{id}", producthttp.GetProductByIDHandler)
 	router.Get("/products", producthttp.SearchProductsHandler)
-	router.Post("/products",producthttp.CreateProductHandler)
+	router.Post("/products", producthttp.CreateProductHandler)
 	// router.Put("/products/{ìd}",UpdateProductHandler)
 	// router.Delete("/products/{id}", DeleteProductHandler)
 
-	http.ListenAndServe(":8081",router)
+	http.ListenAndServe(":8081", router)
 }
 
 //endpoints

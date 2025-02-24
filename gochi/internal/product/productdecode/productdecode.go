@@ -6,7 +6,7 @@ import (
 	"first-tutorial/internal/product/productdomain/productentities"
 	"net/http"
 
-	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/v5"
 )
 
 func DecodeProductFromBody(r *http.Request) (*productentities.Product, error) {
@@ -15,7 +15,6 @@ func DecodeProductFromBody(r *http.Request) (*productentities.Product, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	return createProduct, nil
 }
 
@@ -24,7 +23,6 @@ func DecodeStringIDFromURI(r *http.Request) (string, error) {
 	if id == "" {
 		return "", errors.New("empty_id_error")
 	}
-
 	return id, nil
 }
 

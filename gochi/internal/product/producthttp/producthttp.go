@@ -50,7 +50,6 @@ func GetProductByIDHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 	}
-
 	product, err := productService.GetByID(ctx, id)
 
 	if err != nil {

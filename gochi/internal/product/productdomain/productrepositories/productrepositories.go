@@ -22,9 +22,7 @@ func (p *ProductRepository) Create(ctx context.Context, product *productentities
 
 func (p *ProductRepository) Search(_ context.Context, productType string) ([]*productentities.Product, error) {
 	var matchedValues []*productentities.Product
-	print(productdb.Memory)
 	for _, value := range productdb.Memory {
-		print(value.Type)
 		if value.Type == productType {
 			matchedValues = append(matchedValues, value)
 		}
@@ -34,12 +32,13 @@ func (p *ProductRepository) Search(_ context.Context, productType string) ([]*pr
 }
 
 func (p *ProductRepository) GetByID(_ context.Context, id string) (*productentities.Product, error) {
+	print("ID", id)
 	product, ok := productdb.Memory[id]
-
+	print("\n")
+	print("product", product)
 	if !ok {
 		return nil, errors.New("product_not_found")
 	}
-
 	return product, nil
 }
 

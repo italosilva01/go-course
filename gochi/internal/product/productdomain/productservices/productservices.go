@@ -41,5 +41,6 @@ func (p *productService) Search(ctx context.Context, productType string) ([]*pro
 }
 
 func (p *productService) GetByID(ctx context.Context, id string) (*productentities.Product, error) {
+	print("service id", id)
 	return p.productRepositories.GetByID(ctx, id)
 }

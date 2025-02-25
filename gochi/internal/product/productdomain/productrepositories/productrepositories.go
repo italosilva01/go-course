@@ -32,14 +32,28 @@ func (p *ProductRepository) Search(_ context.Context, productType string) ([]*pr
 }
 
 func (p *ProductRepository) GetByID(_ context.Context, id string) (*productentities.Product, error) {
-	print("ID", id)
 	product, ok := productdb.Memory[id]
-	print("\n")
-	print("product", product)
 	if !ok {
 		return nil, errors.New("product_not_found")
 	}
 	return product, nil
 }
 
-// Fazer Request de buscar produtos
+func (p *ProductRepository) Delete(_ context.Context, id string) error {
+	productdb.Memory[id] = nil
+	return nil
+}
+
+func (p *ProductRepository) Update(ctx context.Context, productToUpdate *productentities.Product) error {
+	currentProduct, ok := productdb.Memory[productToUpdate.ID]
+	if !ok {
+		return errors.New("product_not_found")
+	}
+	currentProduct.Name = productToUpdate.Name
+	currentProduct.Type = productToUpdate.Type
+	currentProduct.Quantity = productToUpdate.Quantity
+
+	productdb.Memory[productToUpdate.ID] = currentProduct
+
+	return nil
+}

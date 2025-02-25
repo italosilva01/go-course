@@ -44,3 +44,17 @@ func (p *productService) GetByID(ctx context.Context, id string) (*productentiti
 	print("service id", id)
 	return p.productRepositories.GetByID(ctx, id)
 }
+
+func (p *productService) Delete(ctx context.Context, id string) error {
+	return p.productRepositories.Delete(ctx, id)
+}
+
+func (p *productService) Update(ctx context.Context, product *productentities.Product) (*productentities.Product, error) {
+	err := p.productRepositories.Update(ctx, product)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return product, nil
+}

@@ -4,13 +4,13 @@ import (
 	"first-tutorial/internal/encode"
 	"first-tutorial/internal/product/productdecode"
 	"first-tutorial/internal/product/productdomain/productservices"
+	"fmt"
 	"net/http"
 )
 
 var productService = productservices.New()
 
 func SearchProductsHandler(w http.ResponseWriter, r *http.Request) {
-	println(r)
 	ctx := r.Context()
 	productType := productdecode.DecodeTypeQueryString(r)
 
@@ -57,4 +57,53 @@ func GetProductByIDHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	encode.WriteJsonResponse(w, product, http.StatusOK)
+}
+
+func DeleteProductHandler(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	id, err := productdecode.DecodeStringIDFromURI(r)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	err = productService.Delete(ctx, id)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	encode.WriteJsonResponse(w, nil, http.StatusNoContent)
+
+}
+
+func UpdateProductHandler(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	fmt.Println("r: ", r)
+	id, err := productdecode.DecodeStringIDFromURI(r)
+	fmt.Println("id: ", id)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadGateway)
+		return
+	}
+
+	productToUpdate, err := productdecode.DecodeProductFromBody(r)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	productToUpdate.ID = id
+
+	product, err := productService.Update(ctx, productToUpdate)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	encode.WriteJsonResponse(w, product, http.StatusOK)
+
 }
